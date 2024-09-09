@@ -1,10 +1,17 @@
 import { IInputs, IOutputs } from "./generated/ManifestTypes";
-import { HelloWorld, IHelloWorldProps } from "./HelloWorld";
+import { ComponentContextService, Service, getOptionSet } from "pcf-core";
+import { ImageToText, IImageToTextProps } from "./components/imageToText";
 import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { App } from "./components/App"
 
 export class ImageToTextPCF implements ComponentFramework.ReactControl<IInputs, IOutputs> {
     private theComponent: ComponentFramework.ReactControl<IInputs, IOutputs>;
-    private notifyOutputChanged: () => void;
+    // private notifyOutputChanged: () => void;
+
+    private _container: HTMLDivElement;
+    private _notifyOutputChanged: () => void;
+    private _props: IImageToTextProps;
 
     /**
      * Empty constructor.
@@ -23,7 +30,8 @@ export class ImageToTextPCF implements ComponentFramework.ReactControl<IInputs, 
         notifyOutputChanged: () => void,
         state: ComponentFramework.Dictionary
     ): void {
-        this.notifyOutputChanged = notifyOutputChanged;
+        // this.notifyOutputChanged = notifyOutputChanged;
+        Service.init(new ComponentContextService(context))
     }
 
     /**
@@ -32,11 +40,16 @@ export class ImageToTextPCF implements ComponentFramework.ReactControl<IInputs, 
      * @returns ReactElement root react element for the control
      */
     public updateView(context: ComponentFramework.Context<IInputs>): React.ReactElement {
-        const props: IHelloWorldProps = { name: 'Hello, World!' };
         return React.createElement(
-            HelloWorld, props
+            // ImageToText,
+            App
         );
+
     }
+
+    // private renderComponent(context: ComponentFramework.Context<IInputs>): React.ReactElement {
+    //     return React.createElement(ImageToTextComponent);
+    // }
 
     /**
      * It is called by the framework prior to a control receiving new data.
@@ -52,5 +65,6 @@ export class ImageToTextPCF implements ComponentFramework.ReactControl<IInputs, 
      */
     public destroy(): void {
         // Add code to cleanup control if necessary
+        ReactDOM.unmountComponentAtNode(this._container);
     }
 }
